@@ -24,7 +24,7 @@ class RequestHandler (BaseHTTPRequestHandler) :
 
     def do_POST(self) :
 
-        if self.path == "/parser" :
+        if self.path == "/parse" :
 
             returnData = {
                 'result': False,
