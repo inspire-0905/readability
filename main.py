@@ -58,7 +58,6 @@ def handleRequest(self, is_post) :
 
                 queryObj = parse_qs(parseObj.query)
                 originURL = queryObj['url'][0]
-                articleData = parseArticle(originURL)
 
             articleData = parseArticle(originURL)
 
