@@ -1,12 +1,12 @@
 var http = require('http');
 
 var requestStr = JSON.stringify({
-    url: 'http://www.nodebeginner.org/index-zh-cn.html'
+    url: 'http://jianshu.io/p/e95259378a34'
 });
 
 var options = {
     hostname: '127.0.0.1',
-    path: '/parse',
+    path: '/parse/',
     method: 'POST',
     headers: {
         'Content-Length': requestStr.length

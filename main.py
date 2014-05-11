@@ -1,15 +1,17 @@
 import json
 import sys
 import urllib
+import urlparse
 
 from BaseHTTPServer import HTTPServer
 from BaseHTTPServer import BaseHTTPRequestHandler
 from readability.readability import Document
+from urlparse import urlparse, parse_qs
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-def parseArticle(url):
+def parseArticle(url) :
 
     html = urllib.urlopen(url).read()
     docData = Document(html)
@@ -20,45 +22,75 @@ def parseArticle(url):
         'content': articleContent
     }
 
-class RequestHandler (BaseHTTPRequestHandler) :
+def handleRequest(self, is_post) :
 
-    def do_POST(self) :
+    reqPath = ''
 
-        if self.path == "/parse" :
+    if is_post :
 
-            returnData = {
-                'result': False,
-                'title': 'Parse URL Article Failed',
-                'content': ''
-            }
+        reqPath = self.path
 
-            try:
+    else :
+
+        parseObj = urlparse(self.path)
+        reqPath = parseObj.path
+
+    if reqPath == '/parse' or reqPath == '/parse/' :
+
+        returnData = {
+            'result': False,
+            'title': 'Request format invalid',
+            'content': ''
+        }
+
+        try :
+
+            originURL = ''
+
+            if is_post :
 
                 dataLength = self.headers['content-length']
                 dataStr = self.rfile.read(int(dataLength))
                 jsonData = json.loads(dataStr)
                 originURL = jsonData.get('url')
+
+            else :
+
+                queryObj = parse_qs(parseObj.query)
+                originURL = queryObj['url'][0]
                 articleData = parseArticle(originURL)
 
-                returnData = {
-                    'result': True,
-                    'title': articleData['title'],
-                    'content': articleData['content']
-                }
+            articleData = parseArticle(originURL)
 
-            except Exception, e:
+            returnData = {
+                'result': True,
+                'title': articleData['title'],
+                'content': articleData['content']
+            }
 
-                returnData['content'] = str(e)
+        except Exception, e :
 
-            self.send_response(200)
-            self.send_header("Content-type:", "application/json")
-            self.wfile.write("\n")
-            json.dump(returnData, self.wfile)
+            returnData['content'] = str(e)
 
-        else:
+        self.send_response(200)
+        self.send_header("Content-type:", "application/json")
+        self.wfile.write("\n")
+        json.dump(returnData, self.wfile)
 
-            self.send_response(200)
-            self.end_headers()
+    else :
+
+        self.send_response(404)
+        self.end_headers()
+
+class RequestHandler (BaseHTTPRequestHandler) :
+
+    def do_POST(self) :
+
+        handleRequest(self, True)
+
+    def do_GET(self) :
+
+        handleRequest(self, False)
 
 server = HTTPServer(('0.0.0.0', 80), RequestHandler)
 
