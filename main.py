@@ -74,9 +74,17 @@ def handleRequest(self, is_post) :
             returnData['content'] = str(e)
 
         self.send_response(200)
-        self.send_header("Content-type", "application/json;charset=utf-8")
-        self.wfile.write("\n")
-        json.dump(returnData, self.wfile, False, False)
+
+        if reqPath == '/parse/' :
+
+            self.send_header("Content-type", "text/html;charset=utf-8")
+            self.wfile.write(returnData['content'])
+        
+        else :
+
+            self.send_header("Content-type", "application/json;charset=utf-8")
+            self.wfile.write("\n")
+            json.dump(returnData, self.wfile, False, False)
 
     else :
 
