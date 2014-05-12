@@ -42,7 +42,7 @@ def handleRequest(self, is_post) :
         returnData = {
             'result': False,
             'title': 'Request format invalid',
-            'content': ''
+            'content': 'Request format invalid'
         }
 
         try :
