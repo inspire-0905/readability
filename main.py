@@ -1,3 +1,5 @@
+#encoding=utf-8
+
 import json
 import sys
 import urllib
@@ -72,9 +74,9 @@ def handleRequest(self, is_post) :
             returnData['content'] = str(e)
 
         self.send_response(200)
-        self.send_header("Content-type:", "application/json")
+        self.send_header("Content-type", "application/json;charset=utf-8")
         self.wfile.write("\n")
-        json.dump(returnData, self.wfile)
+        json.dump(returnData, self.wfile, False, False)
 
     else :
 
